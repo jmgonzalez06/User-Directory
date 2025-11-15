@@ -72,5 +72,5 @@ dependencies {
 
     // ViewModel in Compose (nice to have for @Composable integration)
     implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.8.6")
-
+    implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.8.6")
 }

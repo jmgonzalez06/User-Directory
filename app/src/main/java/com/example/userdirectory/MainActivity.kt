@@ -3,45 +3,35 @@ package com.example.userdirectory
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.activity.enableEdgeToEdge
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
+import androidx.lifecycle.ViewModelProvider
+import androidx.room.Room
+import com.example.userdirectory.data.local.AppDatabase
+import com.example.userdirectory.data.repo.UserRepository
+import com.example.userdirectory.ui.UserViewModel
+import com.example.userdirectory.ui.UserViewModelFactory
+import com.example.userdirectory.ui.screens.UserListScreen
 import com.example.userdirectory.ui.theme.UserDirectoryTheme
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        enableEdgeToEdge()
+
+        // Build Room DB
+        val db = Room.databaseBuilder(
+            applicationContext,
+            AppDatabase::class.java,
+            "userdb"
+        ).build()
+
+        // Repo + ViewModel
+        val repo = UserRepository(db.userDao())
+        val vmFactory = UserViewModelFactory(repo)
+        val viewModel = ViewModelProvider(this, vmFactory)[UserViewModel::class.java]
+
         setContent {
             UserDirectoryTheme {
-                Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    Greeting(
-                        name = "Android",
-                        modifier = Modifier.padding(innerPadding)
-                    )
-                }
+                UserListScreen(viewModel)
             }
         }
-    }
-}
-
-@Composable
-fun Greeting(name: String, modifier: Modifier = Modifier) {
-    Text(
-        text = "Hello $name!",
-        modifier = modifier
-    )
-}
-
-@Preview(showBackground = true)
-@Composable
-fun GreetingPreview() {
-    UserDirectoryTheme {
-        Greeting("Android")
     }
 }
